@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Icon } from "@iconify/react";
+import './App.css'
 
 function App() {
   const [cards, setCards] = useState([]);
   const [text, setText] = useState("");
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState("#000000");
   const [currentId, setCurrentId] = useState(null);
 
   // Fetch all cards
@@ -12,18 +14,8 @@ function App() {
     fetchCards();
   }, []);
 
-  // const fetchCards = async () => {
-  //   try {
-  //     const response = await axios.get("http://localhost:6000/cards");
-  //     setCards(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching cards:", error);
-  //   }
-  // };
-
   const fetchCards = () => {
-    axios
-      .get("http://localhost:5000/cards")
+    axios.get("http://localhost:5000/cards")
       .then((response) => {
         setCards(response.data);
         console.log(response.data);
@@ -45,7 +37,7 @@ function App() {
         setCards([...cards, response.data]);
       }
       setText("");
-      setColor("");
+      setColor("#000000");
     } catch (error) {
       console.error("Error saving card:", error);
     }
@@ -69,10 +61,10 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Card Manager</h1>
+    <div className="app">
+      <h1 className="title">Card Manager</h1>
 
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+      <div className="input" >
         <input
           type="text"
           placeholder="Text"
@@ -87,21 +79,21 @@ function App() {
         <button onClick={saveCard}>{currentId ? "Update Card" : "Add Card"}</button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
+      <div className="cardsContainer" >
         {cards.map((card) => (
-          <div
+          <div className="card"
             key={card.id}
-            style={{
-              backgroundColor: card.color,
-              padding: "20px",
-              color: "#fff",
-              textAlign: "center",
-              borderRadius: "8px",
-            }}
+            style={{ backgroundColor: card.color }}
           >
-            <p>{card.text}</p>
-            <button onClick={() => editCard(card)}>Edit</button>
-            <button onClick={() => deleteCard(card.id)}>Delete</button>
+            <p className="cardText">{card.text}</p>
+            <div className="buttonsContainer">
+              <button className="cardButtons" onClick={() => editCard(card)}>
+                <Icon className='icon'icon="tabler:edit" />
+              </button>
+              <button className="cardButtons" onClick={() => deleteCard(card.id)}>
+                <Icon className='icon' icon="tabler:trash" />
+              </button>
+            </div>
           </div>
         ))}
       </div>

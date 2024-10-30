@@ -1,14 +1,15 @@
 const express = require("express");
 const cors = require("cors");
+const { v4: uuidv4 } = require("uuid"); // a library to generate unique id
 
 const app = express();
 app.use(cors({ origin: "http://localhost:3000" }));
 const port = 5000;
 
 const cards = [
-  { id: 1, text: "hello", color: "#E69138" },
-  { id: 2, text: "world", color: "#6AA84F" },
-  { id: 3, text: "good afternoon", color: "#A4C2F4" },
+  { id: "1", text: "hello", color: "#E69138" },
+  { id: "2", text: "world", color: "#6AA84F" },
+  { id: "3", text: "good afternoon", color: "#A4C2F4" },
 ];
 
 // middleware
@@ -31,7 +32,7 @@ app.get("/cards/:id", (req, res) => {
 // create a new card
 app.post("/cards", (req, res) => {
   const newCard = {
-    id: cards.length + 1,
+    id: uuidv4(),
     text: req.body.text,
     color: req.body.color,
   };
@@ -41,7 +42,7 @@ app.post("/cards", (req, res) => {
 
 // update card
 app.put("/cards/:id", (req, res) => {
-  const card = cards.find((c) => c.id === parseInt(req.params.id));
+  const card = cards.find((c) => c.id === req.params.id);
   if (!card) return res.status(404).send("card not found");
   card.text = req.body.text;
   card.color = req.body.color;
@@ -50,7 +51,7 @@ app.put("/cards/:id", (req, res) => {
 
 // delete card
 app.delete("/cards/:id", (req, res) => {
-  const cardIndex = cards.findIndex((c) => c.id === parseInt(req.params.id));
+  const cardIndex = cards.findIndex((c) => c.id === req.params.id);
   if (cardIndex === -1) return res.status(404).send("card not found");
 
   const updatedcards = cards.splice(cardIndex, 1);
