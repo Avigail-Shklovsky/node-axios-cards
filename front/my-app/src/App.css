@@ -1,6 +1,7 @@
 .title {
   display: flex;
   justify-content: center;
+  color: white;
 
 }
 
@@ -12,23 +13,27 @@
 
 .cardsContainer {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2%;
-  height: 600px;
+  height: auto;
 }
+
+
 
 .card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 80%;
-  height: 70%;
+  min-height: 250px;
   padding: 20px;
   color: #fff;
   text-align: center;
+  border: 4px solid white;
   border-radius: 8px;
   margin: auto auto;
 }
+
 
 .cardText {
   flex-grow: 1;
@@ -36,21 +41,36 @@
   align-items: center;
   justify-content: center;
   font-size: large;
+  cursor: pointer;
+}
+
+.textUpdate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: large;
+  padding: 4px;
+  border: none;
+  outline: none;
+  height: 36px;
+  min-width: 90%;
+  box-sizing: border-box;
 }
 
 .buttonsContainer {
-  flex-grow: 1;
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-.cardButtons {
+.deleteButton {
   color: white;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
-  width: 100%;
+  width: 12%;
   height: auto;
 }
 
@@ -58,7 +78,122 @@
   opacity: 0.7;
 }
 
-.icon{
-  width: 10%;
+.icon {
+  width: 100%;
   height: auto;
+}
+
+.colorUpdate {
+  width: 30%;
+  height: 6vh;
+  border: 0.1px solid white;
+  cursor: pointer;
+}
+
+
+.addCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+}
+
+.plus {
+  color: white;
+  width: 8%;
+  height: auto;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 50vw;
+  height: 50vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.modalContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  gap: 15px;
+}
+
+.textAdd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: large;
+  padding: 4px;
+  border: none;
+  outline: none;
+  height: 36px;
+  min-width: 50%;
+  box-sizing: border-box;
+}
+
+.colorInput {
+  border: 2px solid white;
+  width: 20%;
+  height: 10vh;
+
+
+}
+
+.colorDiv {
+  display: flex;
+  justify-content: space-evenly;
+  width: 30vw;
+}
+
+.closeModal {
+  position: absolute;
+  background: none;
+  padding: 0;
+  border: none;
+  top: 4%;
+  right: 2%;
+  width: 10%;
+  height: 10%
+}
+
+.closeModalIcon {
+  font-size: 20px;
+  color: white;
+}
+
+.saveCard {
+  border: 2px solid white;
+  font-size: medium;
+  font-weight: bold;
+  width: 15%;
+  height: 6vh;
+  border-radius: 8px;
+}
+
+.addCard{
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  min-height: 250px;
+  padding: 20px;
+  text-align: center;
+  border: 4px solid white;
+  border-radius: 8px;
+  margin: auto auto;
 }
