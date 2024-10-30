@@ -2,19 +2,17 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
-
-const port = 6000;
+app.use(cors({ origin: "http://localhost:3000" }));
+const port = 5000;
 
 const cards = [
-  { id: 1, text: "hello", color: "red" },
-  { id: 2, text: "world", color: "blue" },
-  { id: 3, text: "good afternoon", color: "yellow" },
+  { id: 1, text: "hello", color: "#E69138" },
+  { id: 2, text: "world", color: "#6AA84F" },
+  { id: 3, text: "good afternoon", color: "#A4C2F4" },
 ];
 
 // middleware
 app.use(express.json());
-
 
 // CRUD
 

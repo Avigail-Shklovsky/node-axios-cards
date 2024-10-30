@@ -12,59 +12,52 @@ function App() {
     fetchCards();
   }, []);
 
-  const fetchCards = async () => {
-    try {
-      const response = await axios.get("http://localhost:6000/cards");
-      setCards(response.data);
-      console.log(cards);
-      
-    } catch (error) {
-      console.error("Error fetching cards:", error);
-    }
+  // const fetchCards = async () => {
+  //   try {
+  //     const response = await axios.get("http://localhost:6000/cards");
+  //     setCards(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching cards:", error);
+  //   }
+  // };
+
+  const fetchCards = () => {
+    axios
+      .get("http://localhost:5000/cards")
+      .then((response) => {
+        setCards(response.data);
+        console.log(response.data);
+      })
+      .catch((e) => console.error(e.message));
   };
 
-  // Create a new card
-  const createCard = async () => {
+  // Create or update a card
+  const saveCard = async () => {
     try {
-      const response = await axios.post("http://localhost:6000/cards", { text, color });
-      setCards([...cards, response.data]);
+      if (currentId) {
+        // Update card
+        const response = await axios.put(`http://localhost:5000/cards/${currentId}`, { text, color });
+        setCards(cards.map((card) => (card.id === currentId ? response.data : card)));
+        setCurrentId(null);
+      } else {
+        // Create new card
+        const response = await axios.post("http://localhost:5000/cards", { text, color });
+        setCards([...cards, response.data]);
+      }
       setText("");
       setColor("");
     } catch (error) {
-      console.error("Error creating card:", error);
-    }
-  };
-
-  // Update an existing card
-  const updateCard = async (id) => {
-    try {
-      const response = await axios.put(`http://localhost:6000/cards/${id}`, { text, color });
-      setCards(cards.map((card) => (card.id === id ? response.data : card)));
-      setText("");
-      setColor("");
-      setCurrentId(null);
-    } catch (error) {
-      console.error("Error updating card:", error);
+      console.error("Error saving card:", error);
     }
   };
 
   // Delete a card
   const deleteCard = async (id) => {
     try {
-      await axios.delete(`http://localhost:6000/cards/${id}`);
+      await axios.delete(`http://localhost:5000/cards/${id}`);
       setCards(cards.filter((card) => card.id !== id));
     } catch (error) {
       console.error("Error deleting card:", error);
-    }
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (currentId) {
-      updateCard(currentId);
-    } else {
-      createCard();
     }
   };
 
@@ -79,7 +72,7 @@ function App() {
     <div>
       <h1>Card Manager</h1>
 
-      <form onSubmit={handleSubmit}>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
         <input
           type="text"
           placeholder="Text"
@@ -87,25 +80,33 @@ function App() {
           onChange={(e) => setText(e.target.value)}
         />
         <input
-          type="text"
-          placeholder="Color"
+          type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
         />
-        <button type="submit">{currentId ? "Update Card" : "Add Card"}</button>
-      </form>
+        <button onClick={saveCard}>{currentId ? "Update Card" : "Add Card"}</button>
+      </div>
 
-      <ul>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
         {cards.map((card) => (
-          <li key={card.id} style={{ color: card.color }}>
-            {card.text} ({card.color})
+          <div
+            key={card.id}
+            style={{
+              backgroundColor: card.color,
+              padding: "20px",
+              color: "#fff",
+              textAlign: "center",
+              borderRadius: "8px",
+            }}
+          >
+            <p>{card.text}</p>
             <button onClick={() => editCard(card)}>Edit</button>
             <button onClick={() => deleteCard(card.id)}>Delete</button>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
-};
+}
 
 export default App;
