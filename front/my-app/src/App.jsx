@@ -10,6 +10,7 @@ function App() {
   const [currentId, setCurrentId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   // Fetch all cards
   useEffect(() => {
@@ -70,11 +71,43 @@ function App() {
     setIsEditing(false);
   };
 
+  const handleColorChange = function (e, card) {
+    const newColor = e.target.value;
+    setColor(newColor);
+    setCards(cards.map(function (c) {
+      return c.id === card.id ? { ...c, color: newColor } : c;
+    }));
+  };
+
+  const handleColorBlur = async function (e, card) {
+    const newColor = e.target.value;
+    await axios.put(`http://localhost:5000/cards/${card.id}`, { text: card.text, color: newColor });
+  };
+
   const resetState = () => {
     setCurrentId(null);
     setText("");
     setColor("#403d3d");
     setIsEditing(false);
+  };
+
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDrop = async (index) => {
+    if (draggedIndex === null) return;
+    const updatedCards = [...cards];
+    const [movedCard] = updatedCards.splice(draggedIndex, 1);
+    updatedCards.splice(index, 0, movedCard);
+    const response = await axios.put("http://localhost:5000/cards", updatedCards);
+    setCards(response.data);
+    setDraggedIndex(null);
+  };
+
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
   };
 
 
@@ -85,29 +118,43 @@ function App() {
 
       {isModalOpen && (
         <div className="modal">
-
           <div className="modalContent">
-            <button className="closeModal" onClick={() => setIsModalOpen(false)}>
-              <Icon icon="mingcute:close-fill" className="closeModalIcon" />
+            <button
+              className="closeModal"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <Icon
+                icon="mingcute:close-fill"
+                className="closeModalIcon"
+              />
             </button>
 
-            <h1 style={{ color: 'white' }}>Add Card:</h1>
-            <input className="textAdd"
+            <h1 style={{ color: 'white' }}>
+              Add Card:
+            </h1>
+            <input
+              className="textAdd"
               type="text"
               placeholder="Text"
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
             <div className="colorDiv">
-              <p style={{ color: 'white', fontSize: 'large' }}>Choose background color:</p>
+              <p style={{ color: 'white', fontSize: 'large' }}>
+                Choose background color:
+              </p>
 
-              <input className="colorInput"
+              <input
+                className="colorInput"
                 type="color"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
               />
             </div>
-            <button className="saveCard" onClick={saveCard}>{currentId ? "Update Card" : "Add Card"}</button>
+            <button
+              className="saveCard"
+              onClick={saveCard}>{currentId ? "Update Card" : "Add Card"}
+            </button>
 
           </div>
         </div>
@@ -116,11 +163,19 @@ function App() {
 
 
       <div className="cardsContainer" >
-        {cards.map((card) => (
-          <div className="card" key={card.id} style={{ backgroundColor: card.color }}>
-
+        {cards.map((card, index) => (
+          <div
+            className="card"
+            key={card.id}
+            style={{ backgroundColor: card.color }}
+            draggable
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(index)}
+          >
             {isEditing && currentId === card.id ? (
-              <input className="textUpdate"
+              <input
+                className="textUpdate"
                 type="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -128,42 +183,47 @@ function App() {
                 autoFocus
               />
             ) : (
-              <p className="cardText" onClick={() => handleTextClick(card)}>
+              <p
+                className="cardText"
+                onClick={() => handleTextClick(card)}
+              >
                 {card.text}
               </p>
             )}
 
             <div className="buttonsContainer">
 
-              <input
+              <input // color input to update
                 className="colorUpdate"
                 type="color"
                 value={card.color}
-                onChange={(e) => {
-                  const newColor = e.target.value;
-                  setColor(newColor);
-                  setCards(cards.map((c) => (c.id === card.id ? { ...c, color: newColor } : c)));
-                }}
-                onBlur={async (e) => {
-                  const newColor = e.target.value; // Get the color value on blur
-                  await axios.put(`http://localhost:5000/cards/${card.id}`, { text: card.text, color: newColor });
-                }}
-                style={{ cursor: 'pointer' }}
+                onChange={(e) => handleColorChange(e, card)}
+                onBlur={(e) => handleColorBlur(e, card)}
               />
 
-              <button className="deleteButton" onClick={() => deleteCard(card.id)}>
-                <Icon className='icon' icon="tabler:trash" />
+              <button
+                className="deleteButton"
+                onClick={() => deleteCard(card.id)}
+              >
+                <Icon
+                  className='icon'
+                  icon="tabler:trash"
+                />
               </button>
 
             </div>
-
           </div>
         ))}
-        <button className="addCard" onClick={() => {
-          resetState();
-          setIsModalOpen(true);
-        }}>
-          <Icon className='plus' icon="rivet-icons:plus" />
+        <button
+          className="addCard"
+          onClick={() => {
+            resetState();
+            setIsModalOpen(true);
+          }}>
+          <Icon
+            className='plus'
+            icon="rivet-icons:plus"
+          />
         </button>
       </div>
 

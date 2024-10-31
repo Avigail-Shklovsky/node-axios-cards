@@ -6,7 +6,7 @@ const app = express();
 app.use(cors({ origin: "http://localhost:3000" }));
 const port = 5000;
 
-const cards = [
+let cards = [
   { id: "1", text: "hello", color: "#E69138" },
   { id: "2", text: "world", color: "#6AA84F" },
   { id: "3", text: "good afternoon", color: "#A4C2F4" },
@@ -47,6 +47,24 @@ app.put("/cards/:id", (req, res) => {
   card.text = req.body.text;
   card.color = req.body.color;
   res.json(card);
+});
+
+// update the whole array
+app.put("/cards", (req, res) => {
+  if (Array.isArray(req.body)) {
+    cards = req.body.map((card) => {
+      return {
+        id: card.id,
+        text: card.text || "",
+        color: card.color || "#000000",
+      };
+    });
+    res.status(200).json(cards);
+  } else {
+    res
+      .status(400)
+      .json({ error: "Invalid input. Expected an array of cards." });
+  }
 });
 
 // delete card
