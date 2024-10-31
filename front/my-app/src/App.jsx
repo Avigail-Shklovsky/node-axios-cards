@@ -5,11 +5,10 @@ import './App.css'
 
 function App() {
   const [cards, setCards] = useState([]);
-  const [text, setText] = useState("");
+  const [text, setText] = useState("Enter text here");
   const [color, setColor] = useState("#403d3d");
   const [currentId, setCurrentId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
   // Fetch all cards
@@ -39,9 +38,8 @@ function App() {
         const response = await axios.post("http://localhost:5000/cards", { text, color });
         setCards([...cards, response.data]);
       }
-      setText("");
+      setText("Enter text here");
       setColor("#403d3d");
-      setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving card:", error);
     }
@@ -84,13 +82,6 @@ function App() {
     await axios.put(`http://localhost:5000/cards/${card.id}`, { text: card.text, color: newColor });
   };
 
-  const resetState = () => {
-    setCurrentId(null);
-    setText("");
-    setColor("#403d3d");
-    setIsEditing(false);
-  };
-
   const handleDragStart = (index) => {
     setDraggedIndex(index);
   };
@@ -110,58 +101,23 @@ function App() {
     event.preventDefault();
   };
 
+  const newCard = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/cards", { text, color });
+      setCards([...cards, response.data]);
+      setText("Enter text here");
+      setColor("#403d3d");
+
+    }
+    catch (error) {
+      console.error("Error saving card:", error);
+    }
+
+  }
 
   return (
     <div className="app">
       <h1 className="title">Card Manager</h1>
-
-
-      {isModalOpen && (
-        <div className="modal">
-          <div className="modalContent">
-            <button
-              className="closeModal"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <Icon
-                icon="mingcute:close-fill"
-                className="closeModalIcon"
-              />
-            </button>
-
-            <h1 style={{ color: 'white' }}>
-              Add Card:
-            </h1>
-            <input
-              className="textAdd"
-              type="text"
-              placeholder="Text"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-            <div className="colorDiv">
-              <p style={{ color: 'white', fontSize: 'large' }}>
-                Choose background color:
-              </p>
-
-              <input
-                className="colorInput"
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-              />
-            </div>
-            <button
-              className="saveCard"
-              onClick={saveCard}>{currentId ? "Update Card" : "Add Card"}
-            </button>
-
-          </div>
-        </div>
-      )}
-
-
-
       <div className="cardsContainer" >
         {cards.map((card, index) => (
           <div
@@ -216,10 +172,8 @@ function App() {
         ))}
         <button
           className="addCard"
-          onClick={() => {
-            resetState();
-            setIsModalOpen(true);
-          }}>
+          onClick={newCard}
+        >
           <Icon
             className='plus'
             icon="rivet-icons:plus"
