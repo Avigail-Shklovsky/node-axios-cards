@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import '../App.css'
 
-export const TextInput = ({ card, currentId, setCurrentId, text, 
+export const TextInput = ({ card, currentId, setCurrentId, text,
     setText, saveCard, color, setColor }) => {
     const [isEditing, setIsEditing] = useState(false);
 

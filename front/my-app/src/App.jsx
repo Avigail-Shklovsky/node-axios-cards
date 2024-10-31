@@ -9,6 +9,7 @@ function App() {
   const [color, setColor] = useState("#403d3d");
   const [currentId, setCurrentId] = useState(null);
   const [text, setText] = useState("Enter text here");
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   // Fetch all cards
   useEffect(() => {
@@ -19,31 +20,56 @@ function App() {
     axios.get("http://localhost:5000/cards")
       .then((response) => {
         setCards(response.data);
-        console.log(response.data);
       })
       .catch((e) => console.error(e.message));
   };
 
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
 
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = async (index) => {
+    if (draggedIndex === null) return;
+
+    const updatedCards = [...cards];
+    const [movedCard] = updatedCards.splice(draggedIndex, 1);
+    updatedCards.splice(index, 0, movedCard);
+
+    try {
+      const response = await axios.put("http://localhost:5000/cards", updatedCards);
+      setCards(response.data);
+    } catch (error) {
+      console.error("Error updating cards:", error);
+    }
+
+    setDraggedIndex(null); // Reset dragged index after drop
+  };
 
   return (
     <div className="app">
       <h1 className="title">Card Manager</h1>
-      <div className="cardsContainer" >
+      <div className="cardsContainer">
         {cards.map((card, index) => (
           <Card
-            cards={cards}
-            setCards={setCards}
+            key={card.id}
             card={card}
             index={index}
+            cards={cards}
+            setCards={setCards}
             currentId={currentId}
             setCurrentId={setCurrentId}
             text={text}
             setText={setText}
             color={color}
             setColor={setColor}
-          >
-          </Card>
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(index)}
+          />
         ))}
         <AddCard
           cards={cards}
@@ -52,7 +78,7 @@ function App() {
           setColor={setColor}
           text={text}
           setText={setText}
-        ></AddCard>
+        />
       </div>
     </div>
   );
